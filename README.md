@@ -21,4 +21,11 @@ Csharp x学习
 - 变动追踪快照
 - 变动追踪代理
 
+# [DbConnection Methods](https://docs.microsoft.com/zh-cn/dotnet/api/system.data.common.dbconnection.openasync?view=netcore-3.1)
+# EF Core迁移功能
+EF Core迁移功能可以通过使EF更新数据库架构而不是创建新数据库来解决如下问题：
+   当数据模型更改时，模型都无法与数据库保持同步。每当更改数据模型之后你都可以删除数据库，EF将创建匹配该模型的新数据库并用测试数据为其设定种子。
+<br/><br/>
+   但是在实际生产环境中，通常需要存储保留的数据，以便不会再每次更改（如添加新列）时丢失所有数据。而EF Core的数据迁移功能可以解决盖尔问题。
+
    
