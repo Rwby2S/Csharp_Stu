@@ -94,4 +94,14 @@ namespace ContosoUniversity.Models
     }
 }
 ```
-   
+可使用 RegularExpression 特性应用输入限制。 例如，以下代码要求第一个字符为大写，其余字符按字母顺序排列：
+```
+[RegularExpression(@"^[A-Z]+[a-zA-Z]*$")]
+```
+学习创建WebAPI
+# Web API
+###CreatedAtAction 方法：
+
+- 如果成功，则返回 HTTP 201 状态代码。 HTTP 201 是在服务器上创建新资源的 HTTP POST 方法的标准响应。
+- 向响应添加位置标头。 Location 标头指定新建的待办事项的 URI。 有关详细信息，请参阅创建的 10.2.2 201。
+- 引用 GetTodoItem 操作以创建 Location 标头的 URI。 C# nameof 关键字用于避免在 CreatedAtAction 调用中硬编码操作名称。
