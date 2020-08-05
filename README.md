@@ -63,4 +63,35 @@ Update-Database -Migration 0
 Update-Database -Migration InitialCreate
 Update-Database -Migration 20180904195021_InitialCreate -Connection your_connection_string
 ``
+
+## 自定义数据模型
+### DataType 特性
+### DisplayFormat 特性用于显式指定日期格式：
+``
+[DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+``
+### StringLength 特性
+使用特性指定数据验证规则和验证错误消息。 StringLength 特性设置数据库中的最大长度，并为 ASP.NET Core MVC 提供客户端和服务器端验证。 还可在此属性中指定最小字符串长度，但最小值对数据库架构没有影响。
+```
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace ContosoUniversity.Models
+{
+    public class Student
+    {
+        public int ID { get; set; }
+        [StringLength(50)]
+        public string LastName { get; set; }
+        [StringLength(50)]
+        public string FirstMidName { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime EnrollmentDate { get; set; }
+
+        public ICollection<Enrollment> Enrollments { get; set; }
+    }
+}
+```
    
