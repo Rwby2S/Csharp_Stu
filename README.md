@@ -27,5 +27,40 @@ EF Core迁移功能可以通过使EF更新数据库架构而不是创建新数�
    当数据模型更改时，模型都无法与数据库保持同步。每当更改数据模型之后你都可以删除数据库，EF将创建匹配该模型的新数据库并用测试数据为其设定种子。
 <br/><br/>
    但是在实际生产环境中，通常需要存储保留的数据，以便不会再每次更改（如添加新列）时丢失所有数据。而EF Core的数据迁移功能可以解决盖尔问题。
-
+   
+## 使用迁移功能
+### 工具的安装
+在Package Manager console中运行以下命令，安装包管理器控制台工具：
+``
+Install-Package Microsoft.EntityFrameworkCore.Tools
+``
+在Package Manager Console中运行以下命令，更新这些工具。
+``
+Update-Package Microsoft.EntityFrameworkCore.Tools
+``
+### 验证安装
+通过运行以下命令验证是否已安装这些工具：
+``
+Get-Help about_EntityFrameworkCore
+``
+### 脚本迁移
+以下示例使用迁移名称创建用于 InitialCreate 迁移的脚本。
+``
+Script-Migration -To InitialCreate
+``
+以下示例使用迁移 ID，为 InitialCreate 迁移后的所有迁移创建一个脚本。
+``
+Script-Migration -From 20180904195021_InitialCreate
+``
+#### Update-Database
+将数据库更新到上次迁移或指定迁移。
+下面的示例将还原所有迁移。
+``
+Update-Database -Migration 0
+``
+下面的示例将数据库更新为指定的迁移。 第一个使用迁移名称，第二个使用迁移 ID 和指定的连接：
+``
+Update-Database -Migration InitialCreate
+Update-Database -Migration 20180904195021_InitialCreate -Connection your_connection_string
+``
    
