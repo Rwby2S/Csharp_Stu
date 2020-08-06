@@ -51,21 +51,71 @@ public IActionResult Privacy()
 ## 视图入门
 了解它是干什么的，了解它在中间的处理流程，以及在MVC设计模式中所扮演的角色。<br/>
 服务于Controller和Model，呈现给用户的视图，来显示Model中数据的HTML视图文件。<br/>
-### 视图在项目文件中的部署情况
-├── Controller  
-│   ├── StudentController.cs
-│   ├── HomeController.cs        
-├── Models                       
-├── obj
-├── Views
-│   ├── Home
-│   |   ├── Details.cshtml 
-│   |   ├── Edit.cshtml
-│   |   ├── Index.cshtml
-│   ├── Student               
-│   |   ├── Details.cshtml 
-│   |   ├── Edit.cshtml
-│   |   ├── Index.cshtml
+
+### 自定义视图发现
+- View()或View(object model):查找与操作方法同名的视图文件
+- View(string viewName)
+  - 可查询自定义名称的视图文件
+  - 您可以指定视图名称或视图文件路径
+    - 绝对路径必须指定.cshtml扩展名
+    - 使用相对庐江时，不用带扩展名.cshtml
+### 从控制器传递数据到视图
+- 使用ViewData
+- 使用ViewBag
+- 强类型视图
+
+#### ViewData
+- 是弱类型的字典对象
+- 使用string类型的键值，存储和查询ViewData字典中的数据，
+- 运行时动态解析
+- 没有智能提示，编译时也没有类型检查
+示例:需要在视图上显示第一个学生的信息
+##### StudentContrller
+``` C#
+ public IActionResult Details()
+  {
+      Student model = _studentRepository.GetStudent(1);
+
+      ViewData["PageTitle"] = "Student Details";
+      ViewData["Student"] = model;
+
+      return View();
+  }
+  ```
+  ##### Details.cshtml
+``` html
+@using StudentManagement.Models
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <h3>@ViewData["PageTitle"]</h3>
+
+    @{
+        var student = ViewData["Student"] as Student;
+    }
+
+    <div>
+        姓名: @student.Name
+    </div>
+    <div>
+        邮箱: @student.Email
+    </div>
+    <div>
+        班级名称: @student.ClassName
+    </div>
+</body>
+</html>
+```
+  
+        
+
+
+
+
 
 
 
