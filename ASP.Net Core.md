@@ -58,7 +58,7 @@ public IActionResult Privacy()
   - 可查询自定义名称的视图文件
   - 您可以指定视图名称或视图文件路径
     - 绝对路径必须指定.cshtml扩展名
-    - 使用相对庐江时，不用带扩展名.cshtml
+    - 使用相对路径时，不用带扩展名.cshtml
 ### 从控制器传递数据到视图
 - 使用ViewData
 - 使用ViewBag
@@ -138,7 +138,129 @@ public IActionResult Details()
       班级名称: @ViewBag.Student.ClassName
   </div>
  ```
+ ### ViewData和ViewBag对比
+ - ViewBag是ViewData的包装器
+ - 他们都创建了一个弱类型的视图
+ - ViewData使用字符串键名，来存储和查询数据
+ - ViewBag使用动态属性来存储和查询数据
+ - 均是运行时动态解析
+ - 均不提供编译时类型检查，没有智能提示
+ - 首选方法使使用强类型模型对象，将数据从控制器传递到视图
+ ### 使用强类型视图
+ #### 创建强类型视图
+ - 在视图中使用@model指令指定模型类型
+ ``` html
+@model StudentManagement.Models.Student
+```
+ - 使用@Model访问模型对象属性
+ ``` html
+@Model.Name
+@Model.Email
+@Model.ClassName
+```
+ - 强类型视图提供编译时类型检查和智能提醒
+### 视图模型
+#### ViewModel
+模型对象无法满足视图所需的所有数据时，就需要使用ViewModel了
+##### StudentDetailsViewModel
+``` C#
+namespace StudentManagement.ViewModels
+{
+    public class StudentDetailsViewModel
+    {
+        public Student Student { get; set; }
+        public string PageTitle { get; set; }
+    }
+}
+```
+##### 更改StudentContoller中的方法
+``` C#
+public IActionResult Details()
+{
+    //ViewModel的引入
+    StudentDetailsViewModel studentDetailsViewModel = new StudentDetailsViewModel
+    {
+        Student = _studentRepository.GetStudent(1),
+        PageTitle = "学生详细信息"
+    };         
+   return View(studentDetailsViewModel);
+}
+```
+视图显示内容和强类型模型类似，不过此处需要修改@Model.Student.Name，因为该Model的属性为Student
+### ASP.NET Core MVC中实现List视图
+#### 在IStudentRepository接口中添加获取所有学生的方法
+``` C#
+public interface IStudentRepository
+{
+    Student GetStudent(int id);
 
+    //IEnumerable类型是指数据在内存中
+    IEnumerable<Student> GetAllStduents();
+}
+```
+#### 接口实现方法中实现该方法
+``` C#
+//修改类型为List
+ private List<Student> _students;
+ 
+public IEnumerable<Student> GetAllStduents()
+{
+    return _students;
+}
+```
+#### StudentController
+``` C#
+public IActionResult Index()
+{
+    //此处实际类型类IEnumerable<Student>
+    var students = _studentRepository.GetAllStduents();
+    return View(students);
+}
+```
+#### 实现Index()方法对应的View
+Index.cshtml
+``` html
+@model IEnumerable<StudentManagement.Models.Student> 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>学生页面详情列表</title>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>姓名</th>
+                <th>班级</th>
+                <th>电子邮件</th>
+            </tr>
+        </thead>  
+        <tbody>
+            @foreach (var student in Model)
+            {
+            <tr>
+                <td>
+                    @student.Id
+                </td>
+                <td>
+                    @student.Name
+                </td>
+                <td>
+                    @student.ClassName
+                </td>
+                <td>
+                    @student.Email
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
+ ```
+ ### MVC中布局页面的使用
+ 
 
         
 
