@@ -51,6 +51,21 @@ public IActionResult Privacy()
 ## 视图入门
 了解它是干什么的，了解它在中间的处理流程，以及在MVC设计模式中所扮演的角色。<br/>
 服务于Controller和Model，呈现给用户的视图，来显示Model中数据的HTML视图文件。<br/>
+### 视图在项目文件中的部署情况
+├── Controller  
+│   ├── StudentController.cs
+│   ├── HomeController.cs        
+├── Models                       
+├── obj
+├── Views
+│   ├── Home
+│   |   ├── Details.cshtml 
+│   |   ├── Edit.cshtml
+│   |   ├── Index.cshtml
+│   ├── Student               
+│   |   ├── Details.cshtml 
+│   |   ├── Edit.cshtml
+│   |   ├── Index.cshtml
 
 
 
