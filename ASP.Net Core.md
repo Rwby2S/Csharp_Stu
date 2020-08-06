@@ -82,7 +82,7 @@ public IActionResult Privacy()
       return View();
   }
   ```
-  ##### Details.cshtml
+##### Details.cshtml
 ``` html
 @using StudentManagement.Models
 
@@ -110,7 +110,36 @@ public IActionResult Privacy()
 </body>
 </html>
 ```
-  
+#### ViewBag
+将上述示例中ViewData修改为ViewBag
+##### StudentContrller
+``` C#
+public IActionResult Details()
+{
+    Student model = _studentRepository.GetStudent(1);
+
+    ViewBag.PageTitle = "学生详情";
+    ViewBag.Student = model;
+
+    return View();
+}
+```
+##### Details.cshtml
+``` html
+  <h3>@ViewBag.PageTitle</h3>
+
+  <div>
+      姓名: @ViewBag.Student.Name
+  </div>
+  <div>
+      邮箱: @ViewBag.Student.Email
+  </div>
+  <div>
+      班级名称: @ViewBag.Student.ClassName
+  </div>
+ ```
+
+
         
 
 
