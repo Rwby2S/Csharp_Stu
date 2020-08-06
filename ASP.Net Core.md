@@ -262,11 +262,19 @@ Index.cshtml
  ### MVC中布局页面的使用
  - 让web应用程序中所有的视图保持外观一致性。
  - 布局视图看起来像ASP.NET Web Form中的母页面
- - 布局视图也具有.cshtml扩展名
- - 在**ASP.NET Core MVC**中，默认情况下布局文件名为**_Layout.cshtml**
- - 布局视图文件通常放在**"View/Shared"**的文件夹中
- #### 视图开始_ViewStart.cshtml
- 此处可以设置LayOut的
+ - 布局视图也具有 **.cshtml** 扩展名
+ - 在 **ASP.NET Core MVC** 中，默认情况下布局文件名为 **_Layout.cshtml**
+ - 布局视图文件通常放在 **"View/Shared"** 的文件夹中
+ - 在一个应用程序中可以包含多个布局视图文件
+ 
+ #### 布局页面Sections
+ 在布局视图的渲染节点
+ ``` html
+@RenderSection("Scripts", required: false)
+```
+在普通视图中定义节点
+ 
+
  
 
         
