@@ -273,6 +273,103 @@ Index.cshtml
 @RenderSection("Scripts", required: false)
 ```
 在普通视图中定义节点
+``` html
+@section Scripts{
+    <script>
+        document.write("hello");
+    </script>
+}
+```
+#### 视图开始_ViewStart.cshtml
+- ViewStart中的代码会在单个视图中的代码之前执行
+- 移动 **公用代码** 到ViewStart视图中，如给布局视图文件设置属性
+- ViewStart文件支持分层，不同子文件下可以同时存在ViewStart文件
+
+#### 视图导入_ViewImports
+用来导入命名空间、注册模型等等n多种操作。
+- ViewImports文件还支持一下指令
+  - @addTagHelper
+  - @removeTagHelper
+  - @tagHelperPrefix
+  - @model
+  - @inherits
+  - @inject     //自动注入
+  
+### MVC中的路由
+- 路由技术：
+  - 常规路由
+  - 属性路由
+  
+#### 常规路由
+``` C#
+ app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+});
+```
+他们之间的路由关系如下一一对应 <br/>
+http://localhots:3290/Student/Details/1  
+``` C#
+{controller=Home}/{action=Index}/{id?}}
+``` 
+``` C#
+ public class StudentController : Controller
+{
+    ……
+    public IActionResult Details(int id)
+    {
+        //ViewModel的引入
+        StudentDetailsViewModel studentDetailsViewModel = new StudentDetailsViewModel
+        {
+            Student = _studentRepository.GetStudent(id),
+           PageTitle = "学生详细信息"
+        };         
+       return View(studentDetailsViewModel);
+    }
+}
+```
+
+#### 属性路由
+属性路由可以自己指定对应的路由路径<br/>
+比传统路由更加灵活，可以搭配传统路由使用。 <br/>
+在控制器方法上添加路由注解，一个方法可以同时映射多个路由。
+``` C#
+[Route("")]
+[Route("Home")]
+[Route("Home/Index")]
+public IActionResult Index()
+{
+    //此处实际类型类IEnumerable<Student>
+    var students = _studentRepository.GetAllStduents();
+    return View(students);
+}
+```
+路由中也可以指定参数
+``` C#
+[Route("{test/{id?}")]
+public IActionResult Details(int id = 1)
+{
+    var model = _studentRepository.GetById(id);
+    var viewModel = new StudentDetailsViewModel
+    {
+        Student = model,
+        PageTitle = "viewmodel里的页面标题"
+    };
+    return View(viewModel);
+}
+```
+
+### 使用包管理工具安装Bootstrap
+在wwwroot包下添加客户端库，“提供程序”选择unpkg，在库中搜索bootstrap，安装
+
+### Taghelper
+
+        
+# 需要了解的技术
+## 消息队列rabbitmq 
+## extJs
  
 
  
