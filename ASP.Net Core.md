@@ -480,10 +480,57 @@ public IActionResult Details(int id = 1)
     }
 </div>
  ```
-### Taghelper
-- 服务器端组件
-- 
-        
+ 
+### 修改Details.cshtml
+``` html
+@model StudentManager.ViewModels.StudentDetailsViewModel
+@{ 
+    ViewData["Title"] = "学生详情页";
+}
+
+<div class="row justify-content-center m-3">
+    <div class="col-sm-8">
+        <h1>@Model.Student.Name</h1>
+    </div>
+
+    <div class="card-body text-center">
+        <img class="card-img-top" src="~/images/bao.png" />
+
+        <h4>学生ID: @Model.Student.Id</h4>
+        <h4>邮箱: @Model.Student.Email</h4>
+        <h4>班级名称: @Model.Student.ClassName</h4>
+    </div>
+    <div class="card-footer text-center">
+        <a href="@Url.Action("index","student")" class="btn btn-primary">返回</a>
+        <a href="#" class="btn btn-primary">编辑</a>
+        <a href="#" class="btn btn-danger">删除</a>
+    </div>
+</div>
+```
+
+### Taghelper(标记助手)
+优点：根据参数自动生成，不需要手写超链接<br/>
+在ViewImport中添加TagHelper
+``` html
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+```
+比如，链接TagHelper使用
+``` html
+ <a asp-controller="student" asp-action="details" asp-route-id="@student.Id"
+                   class="btn btn-primary">查看</a>
+```
+手动编写的连接内容如下
+``` html
+<a href="/Student/Details/2">查看</a>
+```
+
+#### 为什么要使用TagHelper
+当路由模板发生变化时，手动编写连接因为路由错误导致无法正常跳转<br />
+而使用TagHelper则不需要担心这种情况
+
+### 图片的TagHelper
+
+
 # 需要了解的技术
 ## 消息队列rabbitmq 
 ## extJs
