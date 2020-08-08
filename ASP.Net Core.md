@@ -438,10 +438,51 @@ public IActionResult Details(int id = 1)
 ```
 
 ### 使用包管理工具安装Bootstrap
-在wwwroot包下添加客户端库，“提供程序”选择unpkg，在库中搜索bootstrap，安装
+在wwwroot包下添加客户端库，“提供程序”选择unpkg，在库中搜索twitter-bootstrap，安装完毕后生成libman.json文件以及bootstrap的相关文件
+#### 修改_Layout.cshtml文件
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ViewData["Title"]</title>
+    <link href="~/css/site.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        @RenderBody()
+    </div>
+   
 
+    @RenderSection("Script", required : false)
+</body>
+</html>
+```
+#### 修改Index.cshtml
+``` html
+@model IEnumerable<StudentManager.Models.Student>
+@{ 
+    ViewData["Title"] = "学生列表页面";
+}
+
+<div class="card-deck">
+    @foreach (var student in Model)
+    {
+        <div class="card m-3">
+            <h3>@student.Name</h3>
+            <img class="card-img-top" src="~/images/bao.png"/>
+            <div class="card-footer text-center">
+                <a href="#" class="btn btn-primary">查看</a>
+                <a href="#" class="btn btn-primary">编辑</a>
+                <a href="#" class="btn btn-danger">删除</a>
+            </div>
+        </div>
+    }
+</div>
+ ```
 ### Taghelper
-
+- 服务器端组件
+- 
         
 # 需要了解的技术
 ## 消息队列rabbitmq 
