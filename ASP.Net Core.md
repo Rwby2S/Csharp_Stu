@@ -1,4 +1,53 @@
 # Asp.Net Core学习
+本文本通过记录从零创建一个学生管理系统来学习ASP.NET Core MVC
+## Model
+### 创建学生模型
+``` C#
+ public class Student
+{
+    public int Id { get; set; }    
+    public string Name { get; set; }
+    public string ClassName { get; set; }
+    public string Email { get; set; }
+}
+```
+### 创建学生类接口
+``` C#
+ public interface IStudentRepository
+{
+    Student GetStudent(int id);
+
+    //IEnumerable类型是指数据在内存中
+    IEnumerable<Student> GetAllStduents();
+}
+```
+### 创建学生测试数据存储类
+``` c#
+public class MockStudentRepository : IStudentRepository
+{
+    private List<Student> _students;
+
+    public MockStudentRepository()
+    {
+        _students = new List<Student>
+        {
+            new Student(){ Id = 1, Name = "Ruby", ClassName = "一年级", Email = "Rwby@Ruby.com"},
+            new Student(){ Id = 2, Name = "Young", ClassName = "一年级", Email = "Rwby@Young.com"},
+            new Student(){ Id = 3, Name = "Black", ClassName = "一年级", Email = "Rwby@Black.com"}
+        };
+    }
+
+    public IEnumerable<Student> GetAllStduents()
+    {
+        return _students;
+    }
+
+    public Student GetStudent(int id)
+    {
+       return  _students.FirstOrDefault(a => a.Id == id);
+    }
+}
+```
 ## 依赖注入
 - ASP.NET Core依赖注入容器注册服务
   - AddSingleton() : 全局单例
@@ -14,6 +63,16 @@ public void ConfigureServices(IServiceCollection services)
 ```
 ## 控制器
 Contoller服务于Http请求到我们的应用程序，作为MVC中的控制器来处理访问的请求，并且能够响应相关的请求。
+### 在控制器中添加依赖注入
+``` C#
+private readonly IStudentRepository _studentRepository;
+
+public StudentController(IStudentRepository studentRepository)
+{
+    _studentRepository = studentRepository;
+}
+```
+
 ### 内容格式协商
 在控制器方法中使用 ObjectResult 返回类型，支持内容协商，根据请求头参数返回数据，<br/>
 ``` C#
@@ -187,6 +246,7 @@ public IActionResult Details()
 }
 ```
 视图显示内容和强类型模型类似，不过此处需要修改@Model.Student.Name，因为该Model的属性为Student
+
 ### ASP.NET Core MVC中实现List视图
 #### 在IStudentRepository接口中添加获取所有学生的方法
 ``` C#
@@ -266,7 +326,23 @@ Index.cshtml
  - 在 **ASP.NET Core MVC** 中，默认情况下布局文件名为 **_Layout.cshtml**
  - 布局视图文件通常放在 **"View/Shared"** 的文件夹中
  - 在一个应用程序中可以包含多个布局视图文件
- 
+ 其基本的结构为:
+ ``` html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ViewData["Title"]</title>
+</head>
+<body>
+    <div>
+        @RenderBody()
+    </div>
+   
+
+    @RenderSection("Script", required : false)
+</body>
+</html>
+```
  #### 布局页面Sections
  在布局视图的渲染节点
  ``` html
