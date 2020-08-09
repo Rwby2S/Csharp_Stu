@@ -868,12 +868,52 @@ public class SQLStudentRepository : IStudentRepository
 - 迁移时为了让我们的数据库架构设计与应用程序的模型类保持同步的功能
 ### 迁移功能常用指令
 - get-help about_entityframeworkcore
- - 提供EF Core的帮助信息
+  - 提供EF Core的帮助信息
 - Add-Migration
- - 添加新迁移记录
+  - 添加新迁移记录
 - Update-Database
- - 讲数据库更新为指定的迁移
+  - 讲数据库更新为指定的迁移
+### 进行迁移
+``` json
+"ConnectionStrings": {
+   "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=StudentDB;Trusted_Connection=True;MultipleActiveResultSets=true",
+}
+```
+### 数据库种子
+添加静态方法类存放种子
+``` c#
+public static class ModelBuilderExtensions
+{
+    public static void Seed(this ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Student>().HasData(
+            new Student(){ Id = 1, Name = "Ruby", ClassName = ClassNameEnum.FirstGrade, Email = "Rwby@Ruby.com"},
+            new Student(){ Id = 2, Name = "Young", ClassName = ClassNameEnum.SecondGrade, Email = "Rwby@Young.com"},
+            new Student(){ Id = 3, Name = "Black", ClassName = ClassNameEnum.GradeThree, Email = "Rwby@Black.com"}
+            );
+    }
+}
+```
+在AppDbContext中添加方法
+``` C#
+ protected override void OnModelCreating(ModelBuilder modelbuilder)
+ {
+     modelbuilder.Seed();
+ }
+ ```
+ 再次进行迁移
+### 领域模型与数据库架构
+-使用 **迁移功能**来同步我们的领域模型和数据库架构设计，使他们保持一致
+- 使用 **Add-Migration**命令来创建一个新的迁移记录
+- 要更新我们的数据库架构，需要采用 **Update-Databse**命令
+- 使用 **Remove-Migration**命令可以删除尚未应用到数据库的迁移记录
+- **_EFMigrationHistory**表用于追踪应用于数据库的迁移记录信息
+- **ModelSnapshot.cs**文件顾名思义，它是当前模型的快照，用于确定将在下一次迁移时发生了什么变化
 
+## 上传文件
+
+
+  
 # 需要了解的技术
 ## 消息队列rabbitmq 
 ## extJs
