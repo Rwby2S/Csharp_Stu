@@ -741,8 +741,28 @@ public ClassNameEnum? ClassName { get; set; }
 | Transient Service  |      新的实例         |      新实例           |
 | Singleton Service  |     同一个实例        |      同一个实例        |
 
+## EF Core
+### 什么是ORM，为什么要使用ORM
+- oRM(对象关系映射器) Object-Relational Mapper
+- EF Core是轻量级，可扩展和开源的软件
+- EF Core也是跨平台额
+- EF Core是微软官方推荐的数据访问平台
+### Code First 和DB First
+Code First
+- 1.创建领域类DbContext 
+- 2.EF Core
+- 3.Database
+DB First
+- 1.Database
+- 2. EF Core
+- 3.领域类&DbContext类
 
-
+## 多层Web应用程序
+|       内容          |         功能     | 
+| :------------------| :-------------------:|
+| 表现层              |    多页MVC、WebApi      | 
+| 应用层              |     针对用户场景、用例设计应用层服务，隔离底层细节       | 
+| 持久化层            |     负责数据查询和持久化         | 
 
 # 需要了解的技术
 ## 消息队列rabbitmq 
