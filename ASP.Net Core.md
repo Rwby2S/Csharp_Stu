@@ -768,9 +768,9 @@ DB First
 
 ### Entity Framework Core包
 ```
- graph Bag
-      A[Micirosoft.EntityFrameworkCore.SqlServer] -->B(Micirosoft.EntityFrameworkCore.Relational)
-      B -->C(Micirosoft.EntityFrameworkCore)
+graph TD
+     A[Micirosoft.EntityFrameworkCore.SqlServer] -->B(Micirosoft.EntityFrameworkCore.Relational)
+     B -->C(Micirosoft.EntityFrameworkCore)
 ```
 
 # 需要了解的技术
