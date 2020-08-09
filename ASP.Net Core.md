@@ -757,12 +757,21 @@ DB First
 - 2. EF Core
 - 3.领域类&DbContext类
 
-## 多层Web应用程序
+### 多层Web应用程序
 |       内容          |         功能     | 
 | :------------------| :-------------------:|
 | 表现层              |    多页MVC、WebApi      | 
 | 应用层              |     针对用户场景、用例设计应用层服务，隔离底层细节       | 
+| 领域层              |    专注于维护业务规则    |
 | 持久化层            |     负责数据查询和持久化         | 
+**注意：** 编写业务代码和其处理流程时，尽量在纯粹的内存环境中进行考虑，更利于引入设计模式，不会被底层存储细节打断思路
+
+### Entity Framework Core包
+```
+ graph Bag
+      A[Micirosoft.EntityFrameworkCore.SqlServer] -->B(Micirosoft.EntityFrameworkCore.Relational)
+      B -->C(Micirosoft.EntityFrameworkCore)
+```
 
 # 需要了解的技术
 ## 消息队列rabbitmq 
