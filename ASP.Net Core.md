@@ -741,13 +741,13 @@ public ClassNameEnum? ClassName { get; set; }
 | Transient Service  |      新的实例         |      新实例           |
 | Singleton Service  |     同一个实例        |      同一个实例        |
 
-## EF Core
-### 什么是ORM，为什么要使用ORM
+# EF Core
+## 什么是ORM，为什么要使用ORM
 - oRM(对象关系映射器) Object-Relational Mapper
 - EF Core是轻量级，可扩展和开源的软件
 - EF Core也是跨平台额
 - EF Core是微软官方推荐的数据访问平台
-### Code First 和DB First
+## Code First 和DB First
 Code First
 - 1.创建领域类DbContext 
 - 2.EF Core
@@ -757,7 +757,7 @@ DB First
 - 2. EF Core
 - 3.领域类&DbContext类
 
-### 多层Web应用程序
+## 多层Web应用程序
 |       内容          |         功能     | 
 | :------------------| :-------------------:|
 | 表现层              |    多页MVC、WebApi      | 
@@ -766,12 +766,113 @@ DB First
 | 持久化层            |     负责数据查询和持久化         | 
 **注意：** 编写业务代码和其处理流程时，尽量在纯粹的内存环境中进行考虑，更利于引入设计模式，不会被底层存储细节打断思路
 
-### Entity Framework Core包
+## Entity Framework Core包
 ```
 graph TD
      A[Micirosoft.EntityFrameworkCore.SqlServer] -->B(Micirosoft.EntityFrameworkCore.Relational)
      B -->C(Micirosoft.EntityFrameworkCore)
 ```
+## DbContext
+### 实现DbContext
+``` C#
+public class AppDbContext : DbContext
+{
+
+    // 将应用程序的配置传递给DbContext
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        :base(options)
+    {
+    }
+
+    // 对要使用到的每个实体都添加 DbSet<TEntity> 属性
+    // 通过DbSet属性来进行增删改查操作
+    // 对DbSet采用Linq查询的时候，EFCore自动将其转换为SQL语句来对基础数据库做查询操作
+    public DbSet<Student> students { get; set; }
+}
+```
+### 使用Sql Server
+#### 注册DbContext连接池
+``` C#
+services.AddDbContextPool<AppDbContext>(
+     optionsAction : options => options.UseSqlServer(_configuration.GetConnectionString("StudentDBConnection"))
+);
+```
+ 其中，本地SqlServer数据库的配置，在appserttings.json中：           
+``` Json
+"ConnectionStrings": {
+      "StudentDBConnection": "server=(localdb)\\MSSQLLocalDB;database=StudentDB;Trusted_Connection=true"
+    }
+```
+## 仓储模式
+- IStudentRepository
+ - 添加
+ - 删除
+ - 修改
+ - 查询
+使用仓储
+- 内存仓储 ：MockStudentRepository
+- SQL仓储 : SQLStudentRepository
+### 实现仓储
+``` C#
+public class SQLStudentRepository : IStudentRepository
+{
+    private readonly AppDbContext context;
+
+    public SQLStudentRepository(AppDbContext context)
+    {
+        this.context = context;
+    }
+
+    public Student Add(Student student)
+    {
+        context.Students.Add(student);
+
+        context.SaveChangesAsync();
+        return student;
+    }
+
+    public Student Delete(int id)
+    {
+        Student student = context.Students.Find(id);
+        if(student != null)
+        {
+            context.Students.Remove(student);
+            context.SaveChangesAsync();
+        }
+        return student;
+    }
+
+    public IEnumerable<Student> GetAllStduents()
+    {
+        return context.Students;
+    }
+
+    public Student GetStudent(int id)
+    {
+        return context.Students.Find(id);
+    }
+
+    public Student Update(Student updatestudent)
+    {
+        //将updatestudent实体信息跟踪到EF Core当中，打上一个表示可以在数据库上下文中进行更新的标记
+        var student = context.Students.Attach(updatestudent);
+        //在跟踪的过程中使用Modified进行标记，表示当前这个属性值已经被修改了
+        student.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+        context.SaveChangesAsync();
+        return updatestudent;
+    }
+}
+```
+## 迁移功能
+- 迁移时为了让我们的数据库架构设计与应用程序的模型类保持同步的功能
+### 迁移功能常用指令
+- get-help about_entityframeworkcore
+ - 提供EF Core的帮助信息
+- Add-Migration
+ - 添加新迁移记录
+- Update-Database
+ - 讲数据库更新为指定的迁移
 
 # 需要了解的技术
 ## 消息队列rabbitmq 
