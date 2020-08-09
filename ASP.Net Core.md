@@ -528,7 +528,220 @@ public IActionResult Details(int id = 1)
 当路由模板发生变化时，手动编写连接因为路由错误导致无法正常跳转<br />
 而使用TagHelper则不需要担心这种情况
 
-### 图片的TagHelper
+#### 图片的TagHelper
+在img标签中使用 **asp-append-version="true"** 对该标签进行增强
+- Image TagHelper增强了 <img>标签，为静态图像文件提供 **缓存破坏行为**
+- 生成唯一的散列值讲其附加到图片的URL。此唯一字符串会提示浏览器从服务器重新加载图片，而不是从浏览器缓存重新加载
+
+#### TagHelper开发环境
+##### 环境标签编辑器
+- Include和exclude属性
+在开发环境中使用本地css文件，在非开发环境下使用的是CDN的css文件。<br/>
+注：```integrity```是用来做完整性检查的，保证CDN提供文件的完整和安全。<br/>
+integrity （大部分情况）是给 CDN 的静态文件使用的 <br/>
+CDN虽然好但 CDN 有可能被劫持，导致下载的文件是被篡改过的（比如通过 DNS 劫持），有了 integrity 就可以检查文件是否是原版。<br/>
+**总之**: 只有当你的网页域名和要载入的静态文件存放的站点域名不一样的时候，使用这两个属性才有意义（并且因浏览器的规定 crossorigin 属性只有这个时候才能正常使用）。
+``` html
+ <environment include="Development">
+     <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+ </environment>
+
+ <environment exclude="UnDevelopment">
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" 
+           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+ </environment>
+``` 
+为了防止CDN加载失败页面无法显示，可以加上fallback相关属性，第一个是失败时加载的文件，第二个是不检查这个文件的完整性
+``` html
+asp-fallback-href="~/lib/twitter-bootstrap/dist/css/bootstrap.css"
+asp-suppress-fallback-integrity="true"
+```
+### 为学生管理系统添加导航栏
+修改_Layout.cshtml文件
+``` html
+ <div class="container">
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+
+            <a class="navbar-brand" asp-controller="student" asp-action="index">
+                <img src="~/images/banner.jpg" width="40" height="30" alt="Alternate Text" />
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div id="collapsibleNavbar" class="collapse navbar-collapse">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="student" asp-action="Index">学生列表</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="student" asp-action="create">添加学生</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        @RenderBody()
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+```
+
+### Core中模型绑定
+- 要将HTTP的请求数据绑定到控制器操作方法上对应的参数上，模型绑定将按照以下指定的顺序在以下位置查找来自HTTP请求的数据。
+ - 表单中的值
+ - 路由中的值
+ - 查询字符串
+ 
+### IStudentRepository定义Add方法
+``` C#
+ public Student Add(Student student);
+```
+#### 向MockStudentRepository中添加Add方法
+``` C#
+public Student Add(Student student)
+{
+    student.Id = _students.Max(s => s.Id) + 1;
+    _students.Add(student);
+    return student;
+}
+```
+#### StudentContorller
+``` C#
+ [HttpGet]
+ public IActionResult Create()
+ {
+     return View();
+ }
+
+ //重定向实体，然后在创建视图页面中创建实体，通过按钮提交，存储到存储体中
+ [HttpPost]
+ public RedirectToActionResult Create(Student student)
+ {
+     Student newStudent = _studentRepository.Add(student);
+     return RedirectToAction("details", new { id = newStudent.Id });
+ }
+``` 
+### 模型验证
+- Required ： 指定该字段是必填的
+- Range : 指定允许的最小值和最大值
+- MinLength : 使用MinLength指定字符串的最小长度
+- MaxLength : 使用MaxLength指定字符串的最大长度
+- Compare : 比较模型的 **2**个属性。例如，比较Emial和ConfirmEmail属性
+- RegularExpression : 正则表达式 验证提供的值是否与正则表达式指定的模式匹配
+        
+#### 第一步:在属性上变价验证属性
+``` C#
+ public class Student
+    {
+        public int Id { get; set; }    
+        [Display(Name = "姓名")]
+        //自定义验证信息
+        [Required(ErrorMessage = "请输入姓名"), MaxLength(50, ErrorMessage = "姓名长度不能超过50个字符")]
+        public string Name { get; set; }
+
+        [Display(Name = "班级信息")]
+        public ClassNameEnum ClassName { get; set; }
+
+        [Required]
+        [Display(Name = "电子邮箱")]
+        [RegularExpression(@"^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$", ErrorMessage = "邮箱格式不正确")]
+        public string Email { get; set; }
+
+        //public string PhotoPath { get; set; }
+    }
+    
+    public enum ClassNameEnum
+    {
+        [Display(Name = "未分配")]
+        None,
+        [Display(Name = "一年级")]
+        FirstGrade,
+        [Display(Name = "二年级")]
+        SecondGrade,
+        [Display(Name = "三年级")]
+        GradeThree
+    }
+```
+#### 第二步: 使用ModelState.IsValid属性验证属性是成功还是失败
+``` C#
+[HttpPost]
+public IActionResult Create(Student student)
+{
+    if (ModelState.IsValid)
+    {
+        Student newStudent = _studentRepository.Add(student);
+        return RedirectToAction("Details", new { id = newStudent.Id });
+    }
+
+    return View();
+}
+```
+#### 第三步：显示错误信息
+使用 ```asp-validation-for```和```asp-validation-summary```标签帮助其来显示错误信息
+``` html
+ <form asp-controller="student" asp-action="create" method="post" class="mt-3">
+     <div asp-validation-summary="All" class="text-danger"></div>
+     <div class="form-group row">
+         <label asp-for="Name" class="col-sm-2 col-form-label"></label>
+
+         <div class="col-sm-10">
+             <input asp-for="Name" class="form-control" placeholder="请输入名字"/>
+             <span asp-validation-for="Name" class="text-danger"></span>
+         </div>
+
+     </div>
+
+     <div class="form-group row">
+         <label asp-for="Email" class="col-sm-2 col-form-label"></label>
+         <div class="col-sm-10">
+             <input asp-for="Email" class="form-control" placeholder="请输入邮箱" />
+             <span asp-validation-for="Email" class="text-danger"></span>
+         </div>
+     </div>
+
+     <div class="form-group row">
+         <label asp-for="ClassName" class="col-sm-2 col-form-label"></label>
+         <div class="col-sm-10">
+             <select asp-for="ClassName" asp-items="Html.GetEnumSelectList<ClassNameEnum>()" class="custom-select mr-sm-2">
+                 <option value="">请选择</option>
+             </select>
+             <span asp-validation-for="ClassName" class="text-danger"></span>
+         </div>
+     </div>
+
+     <div class="col-sm-10">
+         <button type="submit" class="btn btn-primary">创建</button>
+     </div>                
+</form>
+```
+
+### select标签的验证
+设置班级信息有验证属性，讲其设置为可空的类型
+``` C#
+[Display(Name = "班级信息")]
+[Required]
+public ClassNameEnum? ClassName { get; set; }
+```
+
+## 下一阶段
+- EF的基础
+- 单层架构和分层架构的区别
+- 图片上传
+- 404异常页面的拦截
+- 全局异常的拦截
+- 日志记录
+- 身份认证
+
+## AddSingleTon、AddScoped、AddTransient
+|服务类型             |   同一个Http请求的范围 |  横跨多个不同Http请求   |
+| :------------------| -------------------:| :-------------------: |
+| Scoped Service     |     同一个实例        |      新实例           |
+| Transient Service  |      新的实例         |      新实例           |
+| Singleton Service  |     同一个实例        |      同一个实例        |
+
+
 
 
 # 需要了解的技术
