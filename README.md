@@ -1,5 +1,6 @@
 # Csharp_Stu
 Csharp x学习
+# [ASP.NET Core](https://github.com/Rwby2S/Csharp_Stu/blob/master/ASP.Net%20Core.md)
 # 事件
 ## 事件模型的五个组成部分
 1.事件的拥有者<br/>
