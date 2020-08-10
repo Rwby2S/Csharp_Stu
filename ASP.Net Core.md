@@ -816,51 +816,49 @@ services.AddDbContextPool<AppDbContext>(
 ``` C#
 public class SQLStudentRepository : IStudentRepository
 {
-    private readonly AppDbContext context;
+    private readonly AppDbContext _context;
 
     public SQLStudentRepository(AppDbContext context)
     {
-        this.context = context;
+        _context = context;
     }
 
     public Student Add(Student student)
     {
-        context.Students.Add(student);
-
-        context.SaveChangesAsync();
+        _context.Students.Add(student);
+        _context.SaveChanges();
         return student;
     }
 
     public Student Delete(int id)
     {
-        Student student = context.Students.Find(id);
+        Student student = _context.Students.Find(id);
         if(student != null)
         {
-            context.Students.Remove(student);
-            context.SaveChangesAsync();
+            _context.Students.Remove(student);
+            _context.SaveChanges();
         }
         return student;
     }
 
     public IEnumerable<Student> GetAllStduents()
     {
-        return context.Students;
+        return _context.Students;
     }
 
     public Student GetStudent(int id)
     {
-        return context.Students.Find(id);
+        return _context.Students.Find(id);
     }
 
     public Student Update(Student updatestudent)
     {
-        //将updatestudent实体信息跟踪到EF Core当中，打上一个表示可以在数据库上下文中进行更新的标记
-        var student = context.Students.Attach(updatestudent);
-        //在跟踪的过程中使用Modified进行标记，表示当前这个属性值已经被修改了
+        var student = _context.Students.Attach(updatestudent);
         student.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
 
-        context.SaveChangesAsync();
+        _context.SaveChanges();
         return updatestudent;
+
     }
 }
 ```
@@ -911,8 +909,89 @@ public static class ModelBuilderExtensions
 - **ModelSnapshot.cs**文件顾名思义，它是当前模型的快照，用于确定将在下一次迁移时发生了什么变化
 
 ## 上传文件
+### 定义ViewModel
+要上传的字段采用 IFormFile 类型
+``` C#
+[Display(Name = "图片")]
+public IFormFile Photo { get; set; }
+```
+### 编辑视图
+修改cshtml视图文件，修改模型绑定：
+``` html
+@model StudentCreateViewModel
+```
+加入上传文件表单项
+``` html
+<div class="form-group row">
+    <label asp-for="Photo" class="col-sm-2 col-form-label"></label>
+    <div class="col-sm-10">
+        <div class="custom-file">
+            <input asp-for="Photo" class="form-control custom-file-input" />
+            <label class="custom-file-label">请选择照片....</label>
+        </div>               
+    </div>
+</div>
+```
+使表单上显示文件路径内容
+``` javascript
+ @section Script{
+     <script type="text/javascript">
+         $(document).ready(function () {
+             $('.custom-file-input').on("change", function () {
+                 var filename = $(this).val().split("\\").pop();
+
+                 $(this).next(".custom-file-label").html(filename);
+             });
+
+         });
+     </script>
+ }
+```
+修改控制器，使之能够将文件内容复制到wwwroot的images目录下:
+``` c#
+private readonly IStudentRepository _studentRepository;
+private readonly IWebHostEnvironment _hostingEnvironment;
+
+public StudentController(IStudentRepository studentRepository, IWebHostEnvironment hostingEnvironment)
+{
+    _studentRepository = studentRepository;
+    _hostingEnvironment = hostingEnvironment;
+}
+
+//创建学生信息
+[HttpPost]
+ public IActionResult Create(StudentCreateViewModel model)
+ {
+     if (ModelState.IsValid)
+     {
+         String uniqueFileName = null;
+
+         if (model.Photo != null)
+         {
+             string uploadsFloder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
+             uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
+             string filePath = Path.Combine(uploadsFloder,uniqueFileName);
+
+             model.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
+         }
+         Student newStudent = new Student
+         {
+             Name = model.Name,
+             Email = model.Email,
+             ClassName = model.ClassName,
+             PhotoPath = uniqueFileName
+         };
+         _studentRepository.Add(newStudent);
+         return RedirectToAction("Details", new { id = newStudent.Id });
+     }
+
+     return View();
+ }
+```
+### 多文件上传
 
 
+Job任务
   
 # 需要了解的技术
 ## 消息队列rabbitmq 
