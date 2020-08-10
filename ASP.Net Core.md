@@ -989,7 +989,144 @@ public StudentController(IStudentRepository studentRepository, IWebHostEnvironme
  }
 ```
 ### 多文件上传
+#### ViewModel
+修改类型为List
+``` C#
+[Display(Name = "图片")]
+public List<IFormFile> Photos { get; set; }
+```
+#### 修改视图
+``` html
+<div class="form-group row">
+     <label asp-for="Photos" class="col-sm-2 col-form-label"></label>
+     <div class="col-sm-10">
+         <div class="custom-file">
+             <input asp-for="Photos" multiple class="form-control custom-file-input" />
+             <label class="custom-file-label">请选择图片 可以一次选择多张</label>
+         </div>               
+     </div>
+ </div>
+```
+**js代码:**
+``` javascript
+@section Script{
+   <script type="text/javascript">
+       $(document).ready(function () {
+           $('.custom-file-input').on("change", function () {
+               console.log($(this));
+               var fileLable = $(this).next(".custom-file-label");
+               var files = $(this)[0].files;
+               if (files.length > 1) {
+                   fileLable.html('您已选择了' + files.length + '个文件');
+               } else if (files.length == 1) {
+                   fileLable.html(filename);
+               }
+               //var filename = $(this).val().split("\\").pop();                        
+           });
+       });
+   </script>
+}
+```
+#### 修改控制器
+``` C#
+if(model.Photos != null && model.Photos.Count > 0)
+{
+    foreach (var photo in model.Photos)
+    {
+        if (photo != null)
+        {
+            string uploadsFloder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
+            uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
+            string filePath = Path.Combine(uploadsFloder, uniqueFileName);
 
+            photo.CopyTo(new FileStream(filePath, FileMode.Create));
+        }
+    }
+}
+```
+### 添加学生信息编辑功能
+#### 添加编辑视图
+``` html
+@model StudentManager.ViewModels.StudentEditViewModel
+@{
+    ViewData["Title"] = "编辑学生信息";
+    var ExistingPhotoPath = "~/images/" + (Model.ExistingPhotoPath ?? "bao.png");
+}
+
+<form enctype="multipart/form-data" asp-controller="student" asp-action="edit" method="post" class="mt-3">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <input hidden asp-for="Id" />
+    <input hidden asp-for="ExistingPhotoPath" />
+
+    <div class="form-group row">
+        <label asp-for="Name" class="col-sm-2 col-form-label"></label>
+
+        <div class="col-sm-10">
+            <input asp-for="Name" class="form-control" placeholder="请输入名字" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="Email" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="Email" class="form-control" placeholder="请输入邮箱" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="ClassName" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <select asp-for="ClassName" asp-items="Html.GetEnumSelectList<ClassNameEnum>()" class="custom-select mr-sm-2">
+                <option value="">请选择</option>
+            </select>
+            <span asp-validation-for="ClassName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="Photo" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <div class="custom-file">
+                <input asp-for="Photo" class="form-control custom-file-input" />
+                <label class="custom-file-label">请选择照片....</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row row col-sm-4 offset-4">
+        <img class="imagesThumbnail" src="@ExistingPhotoPath" asp-append-version="true" />
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <button type="submit" class="btn btn-primary">更新</button>
+            <a asp-controller="student" asp-action="Index" class="btn btn-primary">取消</a> 
+        </div>
+    </div>  
+
+    @section Script{
+        <script type="text/javascript">
+                $(document).ready(function () {
+                    $('.custom-file-input').on("change", function () {
+                        var filename = $(this).val().split("\\").pop();
+
+                        $(this).next(".custom-file-label").html(filename);
+                    });
+
+                });
+        </script>
+    }
+</form>
+```
+#### Controller添加Edit方法
+
+``` c#
+
+```
 
 Job任务
   
