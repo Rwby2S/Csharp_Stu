@@ -1128,6 +1128,20 @@ if(model.Photos != null && model.Photos.Count > 0)
 
 ```
 
+## 异常处理
+### UseStatusCodePagesWithRedirects和UseStatusCodePagesWithReExecute的区别
+推荐用 UseStatusCodePagesWithReExecute 而不是 UseStatusCodePagesWithRedirects，前者在管道内执行执行错误跳转url，后者会重定向到该url，导致http错误状态码变成新页面的正常执行的200码了。
+#### UseStatusCodePagesWithRedirects
+- UseStatusCodePagesWithRedirects会发出重定向请求，而地址栏中url将会发生更改。
+- 当发生真实错误的时候，它返回一个sucess status代码(200),它在语义上显示的是不正确的。
+
+#### UseStatusCodePagesWithReExecute
+- 重新执行管道请求并返回原始状态代码(例如404)
+- 由于它是重新执行管道请求，而不是发出重定向请求；我们也会在地址栏中保留原始url，例如http://localhost/market/food
+
+### 全局异常处理
+
+
 Job任务
   
 # 需要了解的技术
