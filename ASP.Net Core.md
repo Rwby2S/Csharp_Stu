@@ -1141,6 +1141,32 @@ if(model.Photos != null && model.Photos.Count > 0)
 
 ### 全局异常处理
 
+## 日志记录
+- 通过日志提供程序存储记录或显示记录
+- 控制台日志提供程序
+- 调试日志提供程序
+### 第三方日志记录提供程序
+NLog   Stackdriver   Gelf
+elmah  Log4net  JSNLog
+Serilog  Logger  KissLog.net
+### 记录异常
+- 使用依赖注入，注入ILgger接口
+- 指定注入接口或控制器的类型，作为ILogger泛型参数的参数
+
+### 记录日志信息到文件
+
+### LogLevel配置以及过滤日志结果
+**LogLevel表示所记录消息的严重性**
+|LogLevel            |                      |
+| :------------------| :-------------------:| 
+| Trace = 0          |     LogTrance()      | 
+| Debug = 1          |      LogDebug()      | 
+| Information = 2    |      LogInformation()| 
+| Warning = 3        |      LogWarning()    | 
+| Error = 4          |      LogError()      | 
+| Critical = 5       |      LogCritical()   | 
+| None = 6           |      N/A             | 
+
 
 Job任务
   
