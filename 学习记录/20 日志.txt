@@ -1,0 +1,103 @@
+﻿LogLevel用于控制记录或显示的日志数据量。
+
+20.3 在ASP.NET Core中实现记录异常信息
+
+	学习目标：将学习如果使用ASP.NET Core提供的ILogger接口来记录消息(Info)、警告(Warning)和异常(Exception)信息。
+
+
+20.3.1   通过统一的自定义错误视图来记录日志信息
+
+	private ILogger<ErrorController> logger;
+
+	//获取异常详情信息
+	var exceptionHandlerPathFeature = HttpContext.Feature.Get<IExceptionHandlerPathFeature>();
+	//LogError()方法将异常记录作为日志中的错误类别记录
+	logger.LogError($"路径{exceptionHandlerPathFeature.Path} " + 
+			$"产生了一个错误{exceptionHandlerPathFeature.Error}");
+
+
+	状态码错误时，使用
+	public IActionResult HttpStatusCodeHandler(int statusCode)
+	{
+		var statusCodeResult = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
+
+		switch(statusCode){
+			case 404: 
+				ViewBag.ErrorMessage = "抱歉，读者访问的页面并不存在";
+				//LogWarning()方法将异常记录作为日志中的警告类别记录
+				logger.LogWarning($"发生了一个404错误，路径 = " + $"{statusCodeResult}")
+		}
+	}
+
+
+	在需要日志记录功能的位置注入ILogger实例，可以指定注入的类或控制器，他们会作为ILogger泛型的参数。
+	为了使日志内容的显示操作更加方便，可以再appsettings.json文件中，在日志级别下面添加代码
+	 "Logging":{
+    "LogLevel":{
+      "Default":"Warning"，
+      "Microsoft":"Information"
+    }
+  }，
+
+  ##学习如何使用NLog记录信息到文件中
+  
+  1.首先安装NLog.Web.AspNetCore NuGet包
+  安装包后，会在.csoroj文件中的PackageRefrenc包含安装的包信息
+
+  2.在项目的根目录中创建nlog.config文件，配置记录日志的哦
+
+  3. 启用NLog来记录日志信息
+
+		提供AddNLog()添加NLog， 修改Program.cs文件中的Main()方法
+		AddNLog()方法位于NLog.Extensions.Logging命名空间中。
+
+		 //启动NLog作为日志的程序之一
+         logging.AddNLog();
+
+		(如果只想要将NLog作为日志记录提供程序，则可以清楚其他日志记录提供程序，然后添加NLog)
+
+		//删除所有默认记录日志提供程序
+		logging.ClearProviders();
+
+ ### LogLevel配置及过滤日志信息
+ LogLevel表示记录消息的严重性
+	 //
+        // 摘要:
+        //     Logs that contain the most detailed messages. These messages may contain sensitive
+        //     application data. These messages are disabled by default and should never be
+        //     enabled in a production environment.
+        Trace = 0,
+        //
+        // 摘要:
+        //     Logs that are used for interactive investigation during development. These logs
+        //     should primarily contain information useful for debugging and have no long-term
+        //     value.
+        Debug = 1,
+        //
+        // 摘要:
+        //     Logs that track the general flow of the application. These logs should have long-term
+        //     value.
+        Information = 2,
+        //
+        // 摘要:
+        //     Logs that highlight an abnormal or unexpected event in the application flow,
+        //     but do not otherwise cause the application execution to stop.
+        Warning = 3,
+        //
+        // 摘要:
+        //     Logs that highlight when the current flow of execution is stopped due to a failure.
+        //     These should indicate a failure in the current activity, not an application-wide
+        //     failure.
+        Error = 4,
+        //
+        // 摘要:
+        //     Logs that describe an unrecoverable application or system crash, or a catastrophic
+        //     failure that requires immediate attention.
+        Critical = 5,
+        //
+        // 摘要:
+        //     Not used for writing log messages. Specifies that a logging category should not
+        //     write any messages.
+        None = 6
+
+ Trace 是最低级别，我们能看到所有日志（只能看到比自己和比自己级别高的等级）

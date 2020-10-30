@@ -1,0 +1,8 @@
+﻿
+学习目标： 在ASP.NET Core应用程序中使用 ASP.NET Core Identity实现安全认证相关功能所需要掌握的知识
+
+`什么是ASP.NET Core Identity
+`如何在系统中启动Identity服务
+·UserManager与SignlnManager的API介绍及使用
+·登录用户的Cookie管理
+
