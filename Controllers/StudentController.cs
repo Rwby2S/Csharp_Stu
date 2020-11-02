@@ -64,11 +64,11 @@ namespace StudentManager.Controllers
             return View();
         }
 
-        //重定向实体，然后在创建视图页面中创建实体，通过按钮提交，存储到存储体中
+        //重定向实体,然后在创建视图页面中创建实体,通过按钮提交,存储到存储体中
         [HttpPost]
         public IActionResult Create(StudentCreateViewModel model)
         {
-            //如果验证失败，则返回相同的视图，以便用户可以提供所需的数据并重新提交表单
+            //如果验证失败,则返回相同的视图,以便用户可以提供所需的数据并重新提交表单
             if (ModelState.IsValid)
             {
                 String uniqueFileName = null;
@@ -148,7 +148,7 @@ namespace StudentManager.Controllers
         }
 
         /// <summary>
-        /// 将照片保存到指定的路径中，并返回唯一的文件名
+        /// 将照片保存到指定的路径中,并返回唯一的文件名
         /// </summary>
         /// <returns></returns>
         private string ProcessUploadedFile(StudentCreateViewModel model)
@@ -159,15 +159,15 @@ namespace StudentManager.Controllers
             if(model.Photo != null)
             {
                 //必须将图像上传到wwwroot中的images文件夹
-                //而要获取wwwroot文件夹的路径，我们需要注入 ASP.NET Core提供的HostingEnvironment服务
+                //而要获取wwwroot文件夹的路径,我们需要注入 ASP.NET Core提供的HostingEnvironment服务
                 //通过HostingEnvironment服务去获取wwwroot文件夹的路径
                 string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
-                //为了确保文件名是唯一的，我们在文件名后附加一个新的GUID值和一个下划线
+                //为了确保文件名是唯一的,我们在文件名后附加一个新的GUID值和一个下划线
 
                 uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                //因为使用了非托管资源，所以需要手动进行释放
+                //因为使用了非托管资源,所以需要手动进行释放
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     //使用IFormFile接口提供的CopyTo()方法将文件复制到wwwroot/images文件夹

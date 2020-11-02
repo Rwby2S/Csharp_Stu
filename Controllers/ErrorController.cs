@@ -16,7 +16,7 @@ namespace StudentManager.Controllers
         /// <summary>
         /// 注入ASP.NET COre ILogger服务
         /// 将控制器类型指定为泛型参数
-        /// 这有助于我们确定哪个类或控制器产生了异常，然后记录它
+        /// 这有助于我们确定哪个类或控制器产生了异常,然后记录它
         /// </summary>
         /// <param name="logger"></param>
         public ErrorController(ILogger<ErrorController> logger)
@@ -32,9 +32,9 @@ namespace StudentManager.Controllers
             switch (statusCode)
             {
                 case 404:
-                    ViewData["ErrorMessage"] = "抱歉，您访问的页面不存在";
+                    ViewData["ErrorMessage"] = "抱歉,您访问的页面不存在";
 
-                    logger.LogWarning($"发生了一个404错误，路径={statusCodeResult.OriginalPath},以及查询字符串={statusCodeResult.OriginalQueryString}");
+                    logger.LogWarning($"发生了一个404错误,路径={statusCodeResult.OriginalPath},以及查询字符串={statusCodeResult.OriginalQueryString}");
                     //ViewData["Path"] = statusCodeResult.OriginalPath;
                     //ViewData["BasePath"] = statusCodeResult.OriginalPathBase;
                     //ViewData["QueryStr"] = statusCodeResult.OriginalQueryString;

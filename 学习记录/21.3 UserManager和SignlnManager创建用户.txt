@@ -1,0 +1,13 @@
+﻿	学习使用ASP.NET Core Identity提供的 UserManager服务创建新用户,然后使用其提供的
+SingnlnManager服务来登录用户。
+
+	UserManager<Identity>类包含管理基础数据存储中的用户所需的方法。
+
+	SignlnManager<IdentityUser>类包含用户登录所需的方法。比如,SignlnAsync()、SignOutAsync()等方法来登录和注销用户
+
+
+ ## 如何解决密码验证提示为英文,以及密码验证过于复杂等问题
+	
+	见 21.3.2 ASP.NET Core Identity密码默认设置
+
+	在Startup类中覆盖密码的默认设置

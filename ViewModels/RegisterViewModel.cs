@@ -17,7 +17,7 @@ namespace StudentManager.ViewModels
         /// DataType特性： 
         ///         主要作用是指比数据库内部类型更具体的数据类型
         ///     比如日期、时间、电话号码、货币和邮箱地址等。
-        ///     但是DataType不提供任何验证，它主要服务于我们的视图文件
+        ///     但是DataType不提供任何验证,它主要服务于我们的视图文件
         /// </summary>
         [Required]
         [DataType(DataType.Password)]
@@ -25,7 +25,7 @@ namespace StudentManager.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "确认密码")]
         [Compare("Password", 
-            ErrorMessage = "密码与确认密码不一致，请重新输入")]
+            ErrorMessage = "密码与确认密码不一致,请重新输入")]
         public string ConfirmPassword { get; set; }
     }
 }
