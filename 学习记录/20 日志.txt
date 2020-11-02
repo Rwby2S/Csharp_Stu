@@ -16,45 +16,45 @@
 			$"产生了一个错误{exceptionHandlerPathFeature.Error}");
 
 
-	状态码错误时,使用
+	状态码错误时，使用
 	public IActionResult HttpStatusCodeHandler(int statusCode)
 	{
 		var statusCodeResult = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
 
 		switch(statusCode){
 			case 404: 
-				ViewBag.ErrorMessage = "抱歉,读者访问的页面并不存在";
+				ViewBag.ErrorMessage = "抱歉，读者访问的页面并不存在";
 				//LogWarning()方法将异常记录作为日志中的警告类别记录
-				logger.LogWarning($"发生了一个404错误,路径 = " + $"{statusCodeResult}")
+				logger.LogWarning($"发生了一个404错误，路径 = " + $"{statusCodeResult}")
 		}
 	}
 
 
-	在需要日志记录功能的位置注入ILogger实例,可以指定注入的类或控制器,他们会作为ILogger泛型的参数。
-	为了使日志内容的显示操作更加方便,可以再appsettings.json文件中,在日志级别下面添加代码
+	在需要日志记录功能的位置注入ILogger实例，可以指定注入的类或控制器，他们会作为ILogger泛型的参数。
+	为了使日志内容的显示操作更加方便，可以再appsettings.json文件中，在日志级别下面添加代码
 	 "Logging":{
     "LogLevel":{
-      "Default":"Warning",
+      "Default":"Warning"，
       "Microsoft":"Information"
     }
-  },
+  }，
 
   ##学习如何使用NLog记录信息到文件中
   
   1.首先安装NLog.Web.AspNetCore NuGet包
-  安装包后,会在.csoroj文件中的PackageRefrenc包含安装的包信息
+  安装包后，会在.csoroj文件中的PackageRefrenc包含安装的包信息
 
-  2.在项目的根目录中创建nlog.config文件,配置记录日志的哦
+  2.在项目的根目录中创建nlog.config文件，配置记录日志的哦
 
   3. 启用NLog来记录日志信息
 
-		提供AddNLog()添加NLog, 修改Program.cs文件中的Main()方法
+		提供AddNLog()添加NLog， 修改Program.cs文件中的Main()方法
 		AddNLog()方法位于NLog.Extensions.Logging命名空间中。
 
 		 //启动NLog作为日志的程序之一
          logging.AddNLog();
 
-		(如果只想要将NLog作为日志记录提供程序,则可以清楚其他日志记录提供程序,然后添加NLog)
+		(如果只想要将NLog作为日志记录提供程序，则可以清楚其他日志记录提供程序，然后添加NLog)
 
 		//删除所有默认记录日志提供程序
 		logging.ClearProviders();
@@ -100,4 +100,4 @@
         //     write any messages.
         None = 6
 
- Trace 是最低级别,我们能看到所有日志（只能看到比自己和比自己级别高的等级）
+ Trace 是最低级别，我们能看到所有日志（只能看到比自己和比自己级别高的等级）
